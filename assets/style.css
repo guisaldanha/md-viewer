@@ -1,0 +1,161 @@
+/* Define a cor de fundo e a cor do texto geral */
+body {
+    background-color: #282c34;
+    color: #cccccc;
+    font-family: Arial, sans-serif;
+    margin: 0px 30px;
+    padding: 0;
+}
+
+/* Estilo da seleção de texto */
+::selection {
+    background-color: #444;
+    color: #ffffff;
+}
+::-moz-selection {
+    background-color: #444;
+    color: #ffffff;
+}
+
+/* Estiliza o conteúdo principal */
+#content {
+    padding: 20px;
+    max-width: 800px;
+    margin: auto;
+}
+
+/* Estiliza os títulos com espaçamento e cor diferente */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: #f1f1f1; /* Cor um pouco mais clara para os títulos */
+    margin-top: 40px; /* Adiciona espaçamento abaixo dos títulos */
+}
+
+/* Estiliza os parágrafos e os códigos inline */
+p,
+code {
+    color: #cccccc;
+}
+
+/* Estiliza os links */
+a {
+    color: #ffffff; /* Azul claro */
+    text-decoration: underline;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Estiliza o código em bloco */
+pre {
+    background-color: #2c323c; /* Um tom um pouco mais claro para o fundo do código */
+    border-radius: 5px;
+    padding: 10px;
+    overflow-x: auto;
+    color: #cccccc;
+}
+
+code,
+pre {
+    font-family: Consolas, Monaco, andale mono, ubuntu mono, monospace;
+}
+
+code {
+    background-color: #3e4451; /* Um tom ainda mais escuro para o fundo do código inline */
+    border-radius: 3px;
+    padding: 2px 4px;
+}
+
+
+/* Estiliza tabelas */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+th,
+td {
+    border: 1px solid #4b5563; /* Um tom de cinza mais claro */
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #2c323c; /* Cor de fundo para os cabeçalhos */
+}
+
+tr:nth-child(even) {
+    background-color: #2c323c; /* Cor de fundo alternada para linhas de tabela */
+}
+
+/* Estiliza notas de rodapé */
+.footnote {
+    background-color: #2c323c;
+    border-top: 1px solid #4b5563;
+    padding: 10px 0;
+}
+
+.footnote a {
+    color: #61afef;
+}
+
+.footnote a:hover {
+    text-decoration: underline;
+}
+
+/* Estiliza citações */
+blockquote {
+    border-left: 4px solid #4b5563; /* Um tom de cinza para a borda */
+    padding-left: 20px;
+    margin: 20px 0;
+    color: #cccccc;
+    background-color: #2c323c;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid #4b5563;
+    margin: 20px 0;
+}
+
+/* Estiliza abreviações */
+abbr {
+    border-bottom: 1px dotted #cccccc;
+    cursor: help;
+}
+
+/* Estiliza links internos */
+a[href^="#"] {
+    color: #61afef;
+}
+
+/* Estilo da barra de rolagem para navegadores baseados em WebKit (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 12px; /* Largura da barra de rolagem */
+}
+
+::-webkit-scrollbar-track {
+    background: #282c34; /* Cor do fundo da barra (track) */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #444; /* Cor da barra de rolagem (thumb) */
+    border-radius: 10px; /* Deixa a barra com cantos arredondados */
+    border: 2px solid #282c34; /* Borda para separar a barra do fundo */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #666; /* Cor ao passar o mouse sobre a barra */
+}
+
+/* Para Firefox */
+* {
+    scrollbar-width: thin; /* Define a espessura da barra como fina */
+    scrollbar-color: #444 #282c34; /* Cor da barra e do fundo */
+}

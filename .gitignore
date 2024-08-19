@@ -1,0 +1,7 @@
+.desenvolvimento/
+venv/
+build/
+dist/
+distribuition/
+
+*.spec
