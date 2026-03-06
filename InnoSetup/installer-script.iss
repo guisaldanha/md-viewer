@@ -3,7 +3,7 @@
 
 ; Definições de constantes para o aplicativo
 #define MyAppName "MD Viewer"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "2.0.0"
 #define MyAppPublisher "Guilherme Saldanha"
 #define MyAppURL "https://www.guisaldanha.com/"
 #define MyAppExeName "MDViewer.exe"
@@ -25,11 +25,11 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 ChangesAssociations=yes
 DisableProgramGroupPage=yes
-LicenseFile=D:\Python\MDViewer\LICENSE
+LicenseFile=..\LICENSE
 PrivilegesRequired=lowest
-OutputDir=D:\Python\MDViewer\distribuition
+OutputDir=..\dist
 OutputBaseFilename=MDViewerSetup{#MyAppVersion}
-SetupIconFile=D:\Python\MDViewer\assets\icon.ico
+SetupIconFile=..\assets\icon-mdviewer-installer.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -45,19 +45,19 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
 ; Definição das tarefas adicionais que o usuário pode escolher durante a instalação
-Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: checkedonce
 
 ; Arquivos que serão incluídos no instalador
 [Files]
-Source: "D:\Python\MDViewer\dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion restartreplace
-Source: "D:\Python\MDViewer\dist\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\dist\MDViewer\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\assets\icon-mdviewer-file.ico"; DestDir: "{app}\assets"; Flags: ignoreversion
 
 ; Configurações de registro para associar o aplicativo com arquivos .md
 [Registry]
 ; HKCU: HKEY_CURRENT_USER (Para o usuário atual), HKLM: HKEY_LOCAL_MACHINE (Para todos os usuários)
 Root: HKCU; Subkey: "Software\Classes\{#MyAppAssocExt}\OpenWithProgids"; ValueType: string; ValueName: "{#MyAppAssocKey}"; ValueData: ""; Flags: uninsdeletevalue
 Root: HKCU; Subkey: "Software\Classes\{#MyAppAssocKey}"; ValueType: string; ValueName: ""; ValueData: "{#MyAppAssocName}"; Flags: uninsdeletekey
-Root: HKCU; Subkey: "Software\Classes\{#MyAppAssocKey}\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#MyAppExeName},0"; Flags: uninsdeletevalue
+Root: HKCU; Subkey: "Software\Classes\{#MyAppAssocKey}\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\assets\icon-mdviewer-file.ico"; Flags: uninsdeletevalue
 Root: HKCU; Subkey: "Software\Classes\{#MyAppAssocKey}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""; Flags: uninsdeletevalue
 Root: HKCU; Subkey: "Software\Classes\Applications\{#MyAppExeName}\SupportedTypes"; ValueType: string; ValueName: ".myp"; ValueData: ""; Flags: uninsdeletevalue
 
@@ -79,8 +79,24 @@ Type: filesandordirs; Name: "{localappdata}\MD Viewer\Logs"
 Type: dirifempty; Name: "{userappdata}\MD Viewer"
 
 [Code]
+
 var
   PreviousVersion: string;
+
+function UninstallPreviousVersion: Boolean;
+var
+  UninstallString: string;
+  ResultCode: Integer;
+begin
+  Result := False;
+  if RegQueryStringValue(HKCU, 'Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{#MyAppName}_is1', 'UninstallString', UninstallString) then
+  begin
+    if Exec(UninstallString, '/SILENT', '', SW_SHOW, ewWaitUntilTerminated, ResultCode) then
+    begin
+      Result := True;
+    end;
+  end;
+end;
 
 procedure InitializeWizard;
 { Executa código personalizado durante a fase inicial da instalação, antes que o assistente de instalação mostre suas telas e inicie o processo de instalação propriamente dito.}
@@ -101,7 +117,12 @@ begin
     end
     else if CompareStr(PreviousVersion, '{#MyAppVersion}') < 0 then
     begin
-      MsgBox('Uma versão anterior foi detectada: ' + PreviousVersion + '. Ela será atualizada para a versão ' + '{#MyAppVersion}' + '.', mbInformation, MB_OK);
+      MsgBox('Uma versão anterior foi detectada: ' + PreviousVersion + '. Ela será desinstalada antes de instalar a nova versão.', mbInformation, MB_OK);
+      if not UninstallPreviousVersion then
+      begin
+        MsgBox('Falha ao iniciar a desinstalação da versão anterior.', mbError, MB_OK);
+        Abort;
+      end;
     end
     else if CompareStr(PreviousVersion, '{#MyAppVersion}') > 0 then
     begin

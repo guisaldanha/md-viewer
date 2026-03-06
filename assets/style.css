@@ -1,161 +1,525 @@
-/* Define a cor de fundo e a cor do texto geral */
-body {
-    background-color: #282c34;
-    color: #cccccc;
-    font-family: Arial, sans-serif;
-    margin: 0px 30px;
-    padding: 0;
+/* =============================================================
+   MD Viewer — Full stylesheet
+   Shell layout  +  One Dark markdown content  +  theme overrides
+   ============================================================= */
+
+/* ── CSS custom properties — light defaults, dark override ── */
+:root {
+  --bg:           #ffffff;
+  --fg:           #24292e;
+  --muted:        #6a737d;
+  --border:       #e1e4e8;
+  --link:         #0366d6;
+  --code-bg:      #f6f8fa;
+  --sidebar-bg:   #f6f8fa;
+  --sidebar-w:    240px;
+  --toolbar-h:    40px;
+  --mark-bg:      #fff3b0;
+  --mark-cur:     #ffa000;
+  --check-color:  #2ea44f;
+}
+[data-theme="dark"] {
+  --bg:           #0d1117;
+  --fg:           #c9d1d9;
+  --muted:        #8b949e;
+  --border:       #30363d;
+  --link:         #58a6ff;
+  --code-bg:      #161b22;
+  --sidebar-bg:   #161b22;
+  --mark-bg:      #3d3000;
+  --mark-cur:     #b76f00;
+  --check-color:  #3fb950;
 }
 
-/* Estilo da seleção de texto */
-::selection {
-    background-color: #444;
-    color: #ffffff;
+/* ── Reset & base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%;
+  overflow: hidden;        /* body never scrolls — only #main does */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica,
+               Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  background-color: #282c34;
+  color: #cccccc;
 }
-::-moz-selection {
-    background-color: #444;
-    color: #ffffff;
+a { color: var(--link); }
+
+/* ── Text selection ── */
+::selection      { background-color: #3e4451; color: #ffffff; }
+::-moz-selection { background-color: #3e4451; color: #ffffff; }
+
+/* ── Toolbar ── */
+#toolbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--toolbar-h);
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 12px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+#toolbar button {
+  background: none; border: 1px solid var(--border); border-radius: 6px;
+  color: var(--fg); cursor: pointer; font-size: 13px;
+  padding: 3px 9px; white-space: nowrap;
+}
+#toolbar button:hover { background: var(--code-bg); }
+#search-bar {
+  display: none; align-items: center; gap: 6px; flex: 1;
+}
+#search-input {
+  flex: 1; max-width: 300px;
+  background: var(--code-bg); border: 1px solid var(--border);
+  border-radius: 6px; color: var(--fg);
+  font-size: 13px; padding: 3px 8px; outline: none;
+}
+#search-count { font-size: 12px; color: var(--muted); min-width: 60px; }
+.spacer { flex: 1; }
+
+/* ── Layout ── */
+#layout {
+  display: flex;
+  margin-top: var(--toolbar-h);
+  height: calc(100vh - var(--toolbar-h));
 }
 
-/* Estiliza o conteúdo principal */
+/* ── Sidebar / TOC ── */
+#sidebar {
+  width: var(--sidebar-w);
+  flex: 0 0 var(--sidebar-w);
+  overflow-y: auto;
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--border);
+  padding: 16px 12px;
+  display: none;
+}
+#sidebar.visible { display: block; }
+#toc { font-size: 13px; }
+#toc ul { list-style: none; padding-left: 12px; }
+#toc > ul { padding-left: 0; }
+#toc a {
+  color: var(--muted); text-decoration: none;
+  display: block; padding: 2px 4px; border-radius: 4px;
+}
+#toc a:hover { color: var(--fg); background: var(--border); }
+#toc-title {
+  font-size: 11px; font-weight: 600; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 8px; padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Main / content wrapper ── */
+#main { flex: 1; overflow-y: auto; }
 #content {
-    padding: 20px;
-    max-width: 800px;
-    margin: auto;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 40px 64px;
 }
 
-/* Estiliza os títulos com espaçamento e cor diferente */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    color: #f1f1f1; /* Cor um pouco mais clara para os títulos */
-    margin-top: 40px; /* Adiciona espaçamento abaixo dos títulos */
+/* ── Search highlight ── */
+mark.hit     { background: var(--mark-bg);  border-radius: 2px; color: inherit; }
+mark.hit.cur { background: var(--mark-cur); color: #fff; }
+
+/* ── Task list checkboxes ── */
+.task-list-item { list-style: none; }
+.task-list-item input[type=checkbox] {
+  margin-right: 6px; accent-color: var(--check-color);
 }
 
-/* Estiliza os parágrafos e os códigos inline */
-p,
-code {
-    color: #cccccc;
+/* ── Toast notification ── */
+#toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: var(--fg); color: var(--bg);
+  padding: 7px 16px; border-radius: 20px;
+  font-size: 13px; pointer-events: none;
+  opacity: 0; transition: opacity .2s;
+  z-index: 999;
+}
+#toast.show { opacity: .92; }
+
+/* ── Export dropdown ── */
+.dropdown { position: relative; display: inline-block; }
+.dropdown-menu {
+  display: none; position: absolute; top: calc(100% + 4px); left: 0;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  min-width: 130px; z-index: 200; overflow: hidden;
+}
+.dropdown-menu.open { display: block; }
+.dropdown-menu button {
+  display: block; width: 100%; text-align: left;
+  border: none !important; border-radius: 0 !important;
+  padding: 7px 14px !important;
+}
+.dropdown-menu button:hover { background: var(--code-bg) !important; }
+.dropdown-menu .menu-sep {
+  border-top: 1px solid var(--border); margin: 3px 0;
 }
 
-/* Estiliza os links */
+/* ── Print styles ── */
+@media print {
+  /* Reset the fixed/overflow layout so the browser can paginate freely */
+  html, body      { overflow: visible !important; height: auto !important; }
+  #toolbar, #sidebar, #toast { display: none !important; }
+  #layout {
+    display: block !important;
+    margin-top: 0  !important;
+    height: auto   !important;
+    overflow: visible !important;
+  }
+  #main    { overflow: visible !important; height: auto !important; }
+  #content { max-width: 100% !important; padding: 0 !important; }
+  pre      { white-space: pre-wrap; overflow: visible !important; }
+  a[data-md-link]::after { content: none; }
+}
+
+
+/* =============================================================
+   Markdown Content Styles  —  One Dark (Atom) color scheme
+   Typography & spacing: GitHub Markdown standard
+   ============================================================= */
+
+/* ── Paragraphs ── */
+p {
+  color: #cccccc;
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+/* ── Headings ── */
+h1, h2, h3, h4, h5, h6 {
+  color: #f1f1f1;
+  font-weight: 600;
+  line-height: 1.25;
+  margin-top: 24px;
+  margin-bottom: 16px;
+}
+
+h1 { font-size: 2em;    margin-top: 0; padding-bottom: .3em; border-bottom: 1px solid #3e4451; }
+h2 { font-size: 1.5em;  padding-bottom: .3em; border-bottom: 1px solid #3e4451; }
+h3 { font-size: 1.25em; }
+h4 { font-size: 1em;    }
+h5 { font-size: .875em; }
+h6 { font-size: .85em;  color: #8b949e; }
+
+/* ── Links ── */
 a {
-    color: #ffffff; /* Azul claro */
-    text-decoration: underline;
+  color: #79b8ff;
+  text-decoration: none;
 }
+a:hover { text-decoration: underline; }
+a[href^="#"] { color: #61afef; }
 
-a:hover {
-    text-decoration: underline;
-}
-
-/* Estiliza o código em bloco */
-pre {
-    background-color: #2c323c; /* Um tom um pouco mais claro para o fundo do código */
-    border-radius: 5px;
-    padding: 10px;
-    overflow-x: auto;
-    color: #cccccc;
-}
-
-code,
-pre {
-    font-family: Consolas, Monaco, andale mono, ubuntu mono, monospace;
-}
-
+/* ── Inline code ── */
 code {
-    background-color: #3e4451; /* Um tom ainda mais escuro para o fundo do código inline */
-    border-radius: 3px;
-    padding: 2px 4px;
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono",
+               Menlo, monospace;
+  font-size: 85%;
+  color: #e06c75;
+  background-color: #3e4451;
+  border-radius: 6px;
+  padding: .2em .4em;
 }
 
+/* ── Code blocks ── */
+pre {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono",
+               Menlo, monospace;
+  font-size: 85%;
+  background-color: #2c323c;
+  border-radius: 6px;
+  padding: 16px;
+  overflow-x: auto;
+  line-height: 1.45;
+  margin-top: 0;
+  margin-bottom: 16px;
+}
 
-/* Estiliza tabelas */
+/* Reset code inside pre — Prism handles all coloring and font-size */
+pre code,
+pre code[class*="language-"] {
+  font-size: inherit;
+  color: inherit;
+  background: none;
+  border-radius: 0;
+  padding: 0;
+  white-space: inherit;
+}
+
+/* ── Tables ── */
 table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+  overflow: auto;
+  display: block;
 }
-
-th,
-td {
-    border: 1px solid #4b5563; /* Um tom de cinza mais claro */
-    padding: 8px;
-    text-align: left;
+th, td {
+  border: 1px solid #3e4451;
+  padding: 6px 13px;
+  text-align: left;
 }
-
 th {
-    background-color: #2c323c; /* Cor de fundo para os cabeçalhos */
+  font-weight: 600;
+  background-color: #2c323c;
+  color: #f1f1f1;
 }
+tr { background-color: #282c34; }
+tr:nth-child(even) { background-color: #2c323c; }
 
-tr:nth-child(even) {
-    background-color: #2c323c; /* Cor de fundo alternada para linhas de tabela */
-}
-
-/* Estiliza notas de rodapé */
-.footnote {
-    background-color: #2c323c;
-    border-top: 1px solid #4b5563;
-    padding: 10px 0;
-}
-
-.footnote a {
-    color: #61afef;
-}
-
-.footnote a:hover {
-    text-decoration: underline;
-}
-
-/* Estiliza citações */
+/* ── Blockquote ── */
 blockquote {
-    border-left: 4px solid #4b5563; /* Um tom de cinza para a borda */
-    padding-left: 20px;
-    margin: 20px 0;
-    color: #cccccc;
-    background-color: #2c323c;
+  border-left: 4px solid #3e4451;
+  padding: 0 16px;
+  margin: 0 0 16px 0;
+  color: #8b949e;
 }
+blockquote > :first-child { margin-top: 0; }
+blockquote > :last-child  { margin-bottom: 0; }
 
+/* ── Horizontal rule ── */
 hr {
-    border: 0;
-    border-top: 1px solid #4b5563;
-    margin: 20px 0;
+  border: 0;
+  border-top: 1px solid #3e4451;
+  margin: 24px 0;
+  height: 0;
 }
 
-/* Estiliza abreviações */
+/* ── Lists ── */
+#content ul,
+#content ol {
+  padding-left: 2em;
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+#content li              { margin-top: 4px; }
+#content li + li         { margin-top: 4px; }
+#content li > ul,
+#content li > ol         { margin-top: 4px; margin-bottom: 0; }
+
+/* ── Images ── */
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  display: block;           /* prevents phantom inline whitespace */
+}
+
+/* ── Strikethrough  ~~text~~  (pymdownx.tilde / GitHub MD) ── */
+del {
+  text-decoration: line-through;
+  color: #8b949e;
+}
+
+/* ── Keyboard input  <kbd> ── */
+kbd {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono",
+               Menlo, monospace;
+  font-size: 85%;
+  background-color: #2c323c;
+  border: 1px solid #3e4451;
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  color: #cccccc;
+  padding: .1em .4em;
+}
+
+/* ── Superscript / Subscript  (footnote back-links, math) ── */
+sup, sub {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+sup { top: -0.5em; }
+sub { bottom: -0.25em; }
+
+/* ── Details / Summary  (collapsible sections — GitHub MD) ── */
+details {
+  background-color: #2c323c;
+  border: 1px solid #3e4451;
+  border-radius: 6px;
+  padding: 8px 16px;
+  margin-bottom: 16px;
+}
+summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #f1f1f1;
+  padding: 4px 0;
+  list-style: revert; /* keep the ▶ disclosure triangle */
+}
+details[open] summary { margin-bottom: 8px; }
+
+/* ── Definition lists  (def_list extension) ── */
+dl { margin-top: 0; margin-bottom: 16px; }
+dt {
+  font-weight: 600;
+  color: #f1f1f1;
+  margin-top: 12px;
+}
+dd {
+  margin-left: 2em;
+  margin-bottom: 4px;
+  color: #cccccc;
+}
+
+/* ── Highlight  ==text==  (pymdownx.mark) ── */
+mark {
+  background-color: #ffd700;
+  color: #1a1a1a;
+  border-radius: 2px;
+  padding: 0 .15em;
+}
+
+/* ── Mermaid diagrams ── */
+.mermaid {
+  background-color: #2c323c;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+  text-align: center;
+}
+.mermaid svg { max-width: 100%; height: auto; }
+
+/* ── Footnotes ── */
+.footnote {
+  border-top: 1px solid #3e4451;
+  margin-top: 32px;
+  padding-top: 16px;
+  font-size: 85%;
+  color: #8b949e;
+}
+.footnote a       { color: #61afef; }
+.footnote a:hover { text-decoration: underline; }
+
+/* ── Abbreviations ── */
 abbr {
-    border-bottom: 1px dotted #cccccc;
-    cursor: help;
+  border-bottom: 1px dotted #8b949e;
+  cursor: help;
+  text-decoration: none;
 }
 
-/* Estiliza links internos */
-a[href^="#"] {
-    color: #61afef;
-}
-
-/* Estilo da barra de rolagem para navegadores baseados em WebKit (Chrome, Safari, Edge) */
-::-webkit-scrollbar {
-    width: 12px; /* Largura da barra de rolagem */
-}
-
-::-webkit-scrollbar-track {
-    background: #282c34; /* Cor do fundo da barra (track) */
-}
-
+/* ── Scrollbar (WebKit: Chrome, Edge, Safari) ── */
+::-webkit-scrollbar       { width: 10px; }
+::-webkit-scrollbar-track { background: #282c34; }
 ::-webkit-scrollbar-thumb {
-    background-color: #444; /* Cor da barra de rolagem (thumb) */
-    border-radius: 10px; /* Deixa a barra com cantos arredondados */
-    border: 2px solid #282c34; /* Borda para separar a barra do fundo */
+  background-color: #3e4451;
+  border-radius: 10px;
+  border: 2px solid #282c34;
 }
+::-webkit-scrollbar-thumb:hover { background-color: #555b6b; }
 
-::-webkit-scrollbar-thumb:hover {
-    background-color: #666; /* Cor ao passar o mouse sobre a barra */
-}
-
-/* Para Firefox */
+/* ── Scrollbar (Firefox) ── */
 * {
-    scrollbar-width: thin; /* Define a espessura da barra como fina */
-    scrollbar-color: #444 #282c34; /* Cor da barra e do fundo */
+  scrollbar-width: thin;
+  scrollbar-color: #3e4451 #282c34;
 }
+
+
+/* =============================================================
+   THEME OVERRIDES — come LAST so they win over every hardcoded
+   color above.  Base styles are permanently dark, so:
+     • [data-theme="dark"]  → nothing extra needed
+     • [data-theme="light"] → remap every hardcoded dark value
+   ============================================================= */
+
+/* Layout chrome always follows the CSS vars regardless of theme */
+#toolbar                  { background: var(--bg)         !important; color: var(--fg)    !important; border-bottom-color: var(--border) !important; }
+#toolbar button           { color: var(--fg) !important; border-color: var(--border) !important; }
+#toolbar button:hover     { background: var(--code-bg) !important; }
+#search-input             { background: var(--code-bg) !important; color: var(--fg) !important; border-color: var(--border) !important; }
+#sidebar                  { background: var(--sidebar-bg) !important; border-right-color: var(--border) !important; }
+#toc a                    { color: var(--muted) !important; }
+#toc a:hover              { color: var(--fg) !important; background: var(--border) !important; }
+
+/* Light mode: remap every hardcoded dark colour */
+[data-theme="light"] body        { background-color: var(--bg) !important; color: var(--fg) !important; }
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3,
+[data-theme="light"] h4,
+[data-theme="light"] h5,
+[data-theme="light"] h6          { color: #1a1e24 !important; }
+
+[data-theme="light"] p,
+[data-theme="light"] #content    { color: var(--fg) !important; }
+
+[data-theme="light"] a            { color: var(--link)  !important; }
+[data-theme="light"] a[href^="#"] { color: #0550ae      !important; }
+
+[data-theme="light"] pre  { background-color: #f3f4f6 !important; color: #24292e !important; }
+[data-theme="light"] code { background-color: #eef0f3 !important; color: #24292e !important; }
+
+/* Prism tokens in light mode */
+[data-theme="light"] code[class*=language-],
+[data-theme="light"] pre[class*=language-]           { color: #24292e !important; background: #f3f4f6 !important; }
+[data-theme="light"] :not(pre)>code[class*=language-],
+[data-theme="light"] pre[class*=language-]           { background: #f3f4f6 !important; }
+[data-theme="light"] .token.comment,
+[data-theme="light"] .token.prolog,
+[data-theme="light"] .token.doctype,
+[data-theme="light"] .token.cdata                    { color: #6a737d !important; }
+[data-theme="light"] .token.punctuation              { color: #24292e !important; }
+[data-theme="light"] .token.tag,
+[data-theme="light"] .token.deleted                  { color: #b31d28 !important; }
+[data-theme="light"] .token.function,
+[data-theme="light"] .token.number,
+[data-theme="light"] .token.boolean                  { color: #e36209 !important; }
+[data-theme="light"] .token.constant,
+[data-theme="light"] .token.class-name,
+[data-theme="light"] .token.symbol                   { color: #005cc5 !important; }
+[data-theme="light"] .token.keyword,
+[data-theme="light"] .token.selector,
+[data-theme="light"] .token.atrule                   { color: #d73a49 !important; }
+[data-theme="light"] .token.string,
+[data-theme="light"] .token.attr-value,
+[data-theme="light"] .token.regex                    { color: #032f62 !important; }
+[data-theme="light"] .token.operator,
+[data-theme="light"] .token.entity,
+[data-theme="light"] .token.url                      { color: #005cc5 !important; }
+[data-theme="light"] .token.inserted                 { color: #22863a !important; }
+
+[data-theme="light"] table th                { background-color: #e9ebee !important; color: #24292e !important; }
+[data-theme="light"] table td,
+[data-theme="light"] table th                { border-color: #d0d7de !important; color: var(--fg) !important; }
+[data-theme="light"] tr:nth-child(even)      { background-color: #f6f8fa !important; }
+[data-theme="light"] tr:nth-child(odd)       { background-color: #fff    !important; }
+
+[data-theme="light"] blockquote {
+  background-color: #f6f8fa   !important;
+  border-left-color: #d0d7de  !important;
+  color: var(--fg)            !important;
+}
+[data-theme="light"] hr           { border-top-color: #d0d7de !important; }
+[data-theme="light"] .footnote    { background-color: #f6f8fa !important; border-top-color: #d0d7de !important; }
+[data-theme="light"] .footnote a  { color: var(--link) !important; }
+[data-theme="light"] abbr         { border-bottom-color: var(--fg) !important; }
+[data-theme="light"] del          { color: #6a737d !important; }
+[data-theme="light"] kbd {
+  background-color: #f6f8fa !important;
+  border-color:     #d0d7de !important;
+  color:            #24292e !important;
+}
+[data-theme="light"] details {
+  background-color: #f6f8fa !important;
+  border-color:     #d0d7de !important;
+}
+[data-theme="light"] summary { color: #24292e !important; }
+
+[data-theme="light"] dt { color: #1a1e24 !important; }
+[data-theme="light"] mark {
+  background-color: #fff3b0 !important;
+  color:            #1a1a1a !important;
+}
+[data-theme="light"] .mermaid {
+  background-color: #f6f8fa !important;
+}
+
+/* Scrollbar in light mode */
+[data-theme="light"] ::-webkit-scrollbar-track       { background: #f1f3f5 !important; }
+[data-theme="light"] ::-webkit-scrollbar-thumb       { background-color: #c1c7cd !important; border-color: #f1f3f5 !important; }
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background-color: #9ca3af !important; }
+[data-theme="light"] *                               { scrollbar-color: #c1c7cd #f1f3f5 !important; }
