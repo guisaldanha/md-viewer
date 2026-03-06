@@ -1,7 +1,8 @@
-.desenvolvimento/
-venv/
-build/
-dist/
-distribuition/
+/.desenvolvimento
+/venv
+/.venv
+/build
+/dist
+/distribuition
 
 *.spec

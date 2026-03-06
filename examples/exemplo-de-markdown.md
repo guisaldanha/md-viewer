@@ -14,6 +14,18 @@ Para deixar um texto em negrito, basta colocar dois asteriscos `**` antes e depo
 
 Para deixar um texto em itálico, basta colocar um asterisco `*` antes e depois do texto, ficará assim: *itálico*.
 
+## Escaping
+
+\*isso não é itálico\*
+
+## Riscado
+
+Este texto foi ~~removido~~ substituído.
+
+## Highlight
+
+Este é um ==texto destacado==.
+
 ## Links
 
 Para criar um link, basta colocar o texto do link entre colchetes `[]` e a URL entre parênteses `()`, ficará assim: [link](https://www.google.com).
@@ -21,6 +33,10 @@ Para criar um link, basta colocar o texto do link entre colchetes `[]` e a URL e
 ## Imagens
 
 Para adicionar uma imagem, basta colocar um ponto de exclamação `!`, o texto alternativo entre colchetes `[]` e a URL da imagem entre parênteses `()`, ficará assim: ![texto alternativo](https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png).
+
+> Markdown é mais simples do que HTML.
+>
+> — John Gruber
 
 ## Listas
 
@@ -33,6 +49,20 @@ Você pode criar listas ordenadas e não ordenadas. Para listas não ordenadas, 
 1. Item 1
 2. Item 2
 3. Item 3
+
+## Lista de Tarefas
+
+- [x] Item concluído
+- [ ] Item pendente
+- [ ] Outro item pendente
+
+## Lista de Definições
+
+Termo 1
+: Definição do termo 1
+
+Termo 2
+: Definição do termo 2
 
 ## Código
 
@@ -76,9 +106,41 @@ Você pode criar títulos de diferentes níveis usando `#` antes do texto.
 
 Para adicionar um código inline, basta colocar um acento grave \` antes e depois do código, ficará assim: `código`.
 
+## Sessões dobráveis
+
+<details>
+<summary>Clique para expandir</summary>
+
+Conteúdo escondido aqui.
+
+- Item 1
+- Item 2
+
+</details>
+
+## HTML dentro do markdown
+
+<div style="color:red;" align="center">
+Este texto está em vermelho usando HTML.
+</div>
+
+## Atalhos de teclado
+
+Pressione <kbd>Ctrl</kbd> + <kbd>C</kbd> para copiar.
+
+## Badges
+
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Version](https://img.shields.io/badge/version-1.0-green)
+
 ## Links internos
 
-Para criar links internos, basta colocar um sinal de cerquilha `#` antes do texto, ficará assim: [#Títulos](#títulos).
+Para criar links internos, use [Link para Atalhos do teclado](#atalhos-de-teclado).
+
+## Subscrito e Sobrescrito
+
+H<sub>2</sub>O
+x<sup>2</sup>
 
 ## Notas de rodapé
 
@@ -128,11 +190,25 @@ Para criar uma tabela, basta separar as colunas com barras verticais `|` e adici
 | Linha 2     | Linha 2     | Linha 2     |
 | Linha 3     | Linha 3     | Linha 3     |
 
+## Matemática
+
+A equação de Einstein é $E = mc^2$ e é famosa.
+
+Ou ainda com dois cifrões para centralizar:
+
+$$
+\frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+$$
+
 ## Comentários
 
 Para adicionar comentários, basta colocar um ponto e vírgula `;` antes do texto, ficará assim:
 
 ; Este é um comentário
+
+## Emojis
+
+:smile: :rocket: :fire: :white_check_mark:
 
 ## Referências
 
