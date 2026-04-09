@@ -18,7 +18,7 @@ Just want to use MD Viewer without building from source?
 Download the ready-to-use installer and start viewing your Markdown files in seconds:
 
 <div align="center">
-  <a href="https://github.com/guisaldanha/md-viewer/releases/latest/download/MDViewerSetup2.0.0.exe">
+  <a href="https://github.com/guisaldanha/md-viewer/releases/latest/download/MDViewerSetup3.0.1.exe">
     <img src="assets/download-installer.png" alt="Installer MD Viewer" width="400">
   </a>
 </div>
