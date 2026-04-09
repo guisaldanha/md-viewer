@@ -16,11 +16,17 @@ To make text italic, just put one asterisk `*` before and after the text, like t
 
 ## Links
 
-To create a link, put the link text in square brackets `[]` and the URL in parentheses `()`, like this: [link](https://www.google.com).
+To create a link, put the link text in square brackets `[]` and the URL in parentheses `()`, like this: [link](https://www.google.com)
 
 ## Images
 
-To add an image, put an exclamation mark `!`, the alt text in square brackets `[]`, and the image URL in parentheses `()`, like this: ![alt text](https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png).
+To add an image, put an exclamation mark `!`, the alt text in square brackets `[]`, and the image URL in parentheses `()`, like this:
+```markdown
+![alt text](https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png)`.
+```
+
+Then the image will be displayed like this:
+![alt text](https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png)
 
 ## Lists
 

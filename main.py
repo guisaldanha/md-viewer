@@ -133,7 +133,7 @@ def _emoji_to_unicode(
 
 
 class MDViewer:
-    VERSION = "3.0.0"
+    VERSION = "3.0.1"
 
     # ------------------------------------------------------------------ #
     #  Markdown extension list                                             #
@@ -270,9 +270,31 @@ class MDViewer:
             and lists, emphasis, code etc. inside are not rendered.
         - @mention (GFM):
             @username -> [@username](https://github.com/username)
+
+        Code blocks and inline code spans are stashed before any URL/mention
+        expansion so that URLs inside them are never turned into links.
         """
+        # --- Stash code blocks/spans so URL expansion never touches them ----
+        _PLACEHOLDER = "\x00CODE{}\x00"
+        _stash: list[str] = []
+
+        def _save(m: re.Match) -> str:
+            idx = len(_stash)
+            _stash.append(m.group(0))
+            return _PLACEHOLDER.format(idx)
+
+        # Fenced blocks first (``` or ~~~), then inline code spans
+        result = re.sub(
+            r'^(?:```|~~~)[^\n]*\n[\s\S]*?^(?:```|~~~)[^\n]*$',
+            _save,
+            md_content,
+            flags=re.MULTILINE,
+        )
+        result = re.sub(r'`+[\s\S]*?`+', _save, result)
+        # --------------------------------------------------------------------
+
         # Backslash hard line break
-        result = re.sub(r"\\\n", "  \n", md_content)
+        result = re.sub(r"\\\n", "  \n", result)
 
         # Auto-inject markdown="1" on <details> tags that don't already have it
         result = re.sub(
@@ -321,6 +343,10 @@ class MDViewer:
             r'[@\1](https://github.com/\1)',
             result,
         )
+
+        # Restore stashed code blocks/spans
+        for i, block in enumerate(_stash):
+            result = result.replace(_PLACEHOLDER.format(i), block)
 
         return result
 

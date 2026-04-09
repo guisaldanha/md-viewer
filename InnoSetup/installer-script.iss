@@ -3,7 +3,7 @@
 
 ; Definições de constantes para o aplicativo
 #define MyAppName "MD Viewer"
-#define MyAppVersion "2.0.0"
+#define MyAppVersion "3.0.1"
 #define MyAppPublisher "Guilherme Saldanha"
 #define MyAppURL "https://www.guisaldanha.com/"
 #define MyAppExeName "MDViewer.exe"
@@ -109,7 +109,7 @@ begin
     if CompareStr(PreviousVersion, '{#MyAppVersion}') = 0 then
     begin
       { Perguntar se deseja reparar a instalação }
-      Response := MsgBox('A versão ' + PreviousVersion + ' já está instalada. Deseja reparar a instalação e substituir todos os arquivos?', mbConfirmation, MB_YESNO);
+      Response := MsgBox('Version ' + PreviousVersion + ' is already installed. Do you want to repair the installation and replace all files?', mbConfirmation, MB_YESNO);
       if Response = IDNO then
       begin
         Abort; { Se o usuário não quiser reparar, cancelar a instalação }
@@ -117,16 +117,16 @@ begin
     end
     else if CompareStr(PreviousVersion, '{#MyAppVersion}') < 0 then
     begin
-      MsgBox('Uma versão anterior foi detectada: ' + PreviousVersion + '. Ela será desinstalada antes de instalar a nova versão.', mbInformation, MB_OK);
+      MsgBox('A previous version was detected: ' + PreviousVersion + '. It will be uninstalled before the new version is installed.', mbInformation, MB_OK);
       if not UninstallPreviousVersion then
       begin
-        MsgBox('Falha ao iniciar a desinstalação da versão anterior.', mbError, MB_OK);
+        MsgBox('Failed to start the uninstallation of the previous version.', mbError, MB_OK);
         Abort;
       end;
     end
     else if CompareStr(PreviousVersion, '{#MyAppVersion}') > 0 then
     begin
-      MsgBox('Uma versão mais recente foi detectada: ' + PreviousVersion + '. A instalação será cancelada.', mbError, MB_OK);
+      MsgBox('A newer version was detected: ' + PreviousVersion + '. The installation will be cancelled.', mbError, MB_OK);
       Abort;
     end;
   end;
